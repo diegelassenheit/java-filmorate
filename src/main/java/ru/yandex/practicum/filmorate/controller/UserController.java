@@ -8,18 +8,19 @@ import ru.yandex.practicum.filmorate.model.User;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
 public class UserController {
-    private HashMap<Integer, User> users = new HashMap<>();
+    private Map<Long, User> users = new HashMap<>();
     int currentMaxId = 0;
 
     @PostMapping(value = "/users")
     public User createUser(@Valid @RequestBody User user) {
-        user = clearUser(user);
+        user = replaceEmptyUserName(user);
 
-        currentMaxId = currentMaxId + 1;
+        currentMaxId++;
         int id = currentMaxId;
 
         user.setId(id);
@@ -36,7 +37,7 @@ public class UserController {
         if (!users.containsKey(user.getId())) {
             throw new ValidationException(String.format("Пользователя с id= %d не найдено", user.getId()));
         }
-        user = clearUser(user);
+        user = replaceEmptyUserName(user);
 
         users.put(user.getId(), user);
 
@@ -51,7 +52,7 @@ public class UserController {
     }
     
 
-    private User clearUser(User user) {
+    private User replaceEmptyUserName(User user) {
         // можно было бы пересобрать через builder, но только ради избегания проверки на null тут кажется оверхедом
         if (user.getName() == null || user.getName().isEmpty()) {
             log.warn(String.format("Поле name пустое. Будет выставлено значение login: %s", user.getLogin()));

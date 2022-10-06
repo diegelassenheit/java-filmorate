@@ -8,20 +8,17 @@ import ru.yandex.practicum.filmorate.model.Film;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
 public class FilmController {
-    public HashMap<Integer, Film> films;
+    public Map<Long, Film> films = new HashMap<>();
     int currentMaxId = 0;
 
-    public FilmController() {
-        films = new HashMap<>();
-    }
-
-    @PostMapping(value = "/films")
+    @PostMapping("/films")
     public Film createFilm(@Valid @RequestBody Film film) {
-        currentMaxId = currentMaxId + 1;
+        currentMaxId++;
         int id = currentMaxId;
 
         film.setId(id);
@@ -32,7 +29,7 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping(value = "/films")
+    @PutMapping("/films")
     public Film updateFilm(@Valid @RequestBody Film film) throws ValidationException {
         if (!films.containsKey(film.getId())) {
             throw new ValidationException(String.format("Фильма с id= %d не найдено", film.getId()));
