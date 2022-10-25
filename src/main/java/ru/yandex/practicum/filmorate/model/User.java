@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class User extends FilmorateModel {
+public class User {
     private long id;
     @Email
     @NotEmpty

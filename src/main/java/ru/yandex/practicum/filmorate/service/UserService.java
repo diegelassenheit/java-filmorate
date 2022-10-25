@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UserService {
-    Long currentMaxId = 0L; // не был уверен, переносить id в стораджи или нет. Оставил тут
     private final UserStorage userStorage;
 
     public UserService(UserStorage userStorage) {
@@ -24,16 +23,13 @@ public class UserService {
 
     public User createUser(User user) {
         user = replaceEmptyUserName(user);
-        currentMaxId++;
-        Long id = currentMaxId;
-        user.setId(id);
-
-        return userStorage.create(id, user);
+        return userStorage.create(user);
     }
 
     public User updateUser(User user) throws ValidationException {
-        userStorage.checkIfUserExists(user.getId());
-
+        if (userStorage.getUser(user.getId()) == null) {
+            throw new NotFoundException(String.format("Пользователь с id %d не найден", user.getId()));
+        }
         user = replaceEmptyUserName(user);
         user = userStorage.update(user.getId(), user);
 
@@ -41,12 +37,12 @@ public class UserService {
     }
 
     public void deleteUser(Long id) throws NotFoundException {
-        userStorage.checkIfUserExists(id);
+        checkIfUserExists(id);
         userStorage.delete(id);
     }
 
     public User getUserById(Long id) throws NotFoundException {
-        userStorage.checkIfUserExists(id);
+        checkIfUserExists(id);
         return userStorage.getUser(id);
     }
 
@@ -55,8 +51,8 @@ public class UserService {
     }
 
     public void addFriend(Long userId, Long friendId) throws NotFoundException {
-        userStorage.checkIfUserExists(userId);
-        userStorage.checkIfUserExists(friendId);
+        checkIfUserExists(userId);
+        checkIfUserExists(friendId);
 
         User user1 = getUserById(userId);
         User user2 = getUserById(friendId);
@@ -65,8 +61,8 @@ public class UserService {
     }
 
     public void removeFriend(Long userId, Long friendId) throws NotFoundException {
-        userStorage.checkIfUserExists(userId);
-        userStorage.checkIfUserExists(friendId);
+        checkIfUserExists(userId);
+        checkIfUserExists(friendId);
 
         User user1 = getUserById(userId);
         User user2 = getUserById(friendId);
@@ -92,6 +88,17 @@ public class UserService {
             user.setName(user.getLogin());
         }
         return user;
+    }
+
+    public void checkIfUserExists(Long userId) throws NotFoundException {
+        /* Можно было бы сделать параметризованную аннотацию для параметра в контроллере вида
+           @checkIfModelExists(model=User) Long userId, но не уверен,
+           что делать скрытые запросы к БД (потенциально) и держать в объекте аннотации ссылки
+           на два стораджа - это хорошая идея. */
+        User user = userStorage.getUser(userId);
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
+        }
     }
 
 

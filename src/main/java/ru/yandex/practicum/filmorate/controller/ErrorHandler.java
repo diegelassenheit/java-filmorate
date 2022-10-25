@@ -27,4 +27,12 @@ public class ErrorHandler {
                 String.format("Не найдено: \"%s\".", e.toString())
         );
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleOtherException(final Throwable e) {
+        return new ErrorResponse(
+                String.format("Ошибка \"%s\".", e.toString())
+        );
+    }
 }

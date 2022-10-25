@@ -11,9 +11,14 @@ import java.util.Map;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
+    Long currentMaxId = 0L;
 
     @Override
-    public User create(Long id, User user) {
+    public User create(User user) {
+        currentMaxId++;
+        Long id = currentMaxId;
+        user.setId(id);
+
         users.put(user.getId(), user);
         return user;
     }
@@ -44,13 +49,13 @@ public class InMemoryUserStorage implements UserStorage {
         users.remove(id);
     }
 
-    public void checkIfUserExists(Long userId) throws NotFoundException {
-        /* Можно было бы сделать параметризованную аннотацию для параметра в контроллере вида
-           @checkIfModelExists(model=User) Long userId, но не уверен,
-           что делать скрытые запросы к БД (потенциально) и держать в объекте аннотации ссылки
-           на два стораджа - это хорошая идея. */
-        if (!contains(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
-        }
-    }
+//    public void checkIfUserExists(Long userId) throws NotFoundException {
+//        /* Можно было бы сделать параметризованную аннотацию для параметра в контроллере вида
+//           @checkIfModelExists(model=User) Long userId, но не уверен,
+//           что делать скрытые запросы к БД (потенциально) и держать в объекте аннотации ссылки
+//           на два стораджа - это хорошая идея. */
+//        if (!contains(userId)) {
+//            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
+//        }
+//    }
 }

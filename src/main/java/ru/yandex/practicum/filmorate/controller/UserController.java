@@ -21,7 +21,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/users")
-    public User createUser(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user){
         user = userService.createUser(user);
 
         log.info(String.format("Пользователь c user_id=%d создан", user.getId()));

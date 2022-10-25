@@ -10,11 +10,10 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
-    Long currentMaxId = 0L;
-
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
@@ -24,11 +23,7 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
-        currentMaxId++;
-        Long id = currentMaxId;
-        film.setId(id);
-        filmStorage.create(film.getId(), film);
-
+        filmStorage.create(film);
         return film;
     }
 
@@ -50,25 +45,38 @@ public class FilmService {
 
     public void addLike(Long filmId, Long userId) throws NotFoundException {
         checkIfFilmExists(filmId);
-        userStorage.checkIfUserExists(userId);
+        if (userStorage.getUser(userId) == null) {
+            throw new NotFoundException(String.format("Пользователь с id %d не найден", userId));
+        }
         filmStorage.get(filmId).addLikeFromUser(userId);
     }
 
     public void removeLike(Long filmId, Long userId) throws NotFoundException {
         checkIfFilmExists(filmId);
-        userStorage.checkIfUserExists(userId);
+        if (userStorage.getUser(userId) == null) {
+            throw new NotFoundException(String.format("Пользователь с id %d не найден", userId));
+        }
         filmStorage.get(filmId).removeLikeFromUser(userId);
     }
 
+//    public List<Film> getTopLikedFilms(int count) {
+//        List<Film> allFilms = new ArrayList<>(filmStorage.getAll());
+//        allFilms.sort(Comparator.comparingInt(Film::getNumberOfLikes).reversed());
+//        int sliceSize = Math.min(count, allFilms.size());
+//        return allFilms.subList(0, sliceSize);
+//    }
+
     public List<Film> getTopLikedFilms(int count) {
-        List<Film> allFilms = new ArrayList<>(filmStorage.getAll());
-        allFilms.sort(Comparator.comparingInt(Film::getNumberOfLikes).reversed());
-        int sliceSize = Math.min(count, allFilms.size());
-        return allFilms.subList(0, sliceSize);
+        int sliceSize = Math.min(count, filmStorage.getAll().size());
+        return filmStorage.getAll().stream()
+                .sorted(Comparator.comparingLong(Film::getNumberOfLikes).reversed())
+                .collect(Collectors.toList()).subList(0, sliceSize);
     }
 
     private void checkIfFilmExists(Long filmId) throws NotFoundException {
-        if (!filmStorage.contains(filmId)) {
+        Film film = filmStorage.get(filmId);
+
+        if (film == null) {
             throw new NotFoundException(String.format("Фильм с id = %d не найден!", filmId));
         }
     }

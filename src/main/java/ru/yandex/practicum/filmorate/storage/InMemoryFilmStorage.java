@@ -10,9 +10,13 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     public Map<Long, Film> films = new HashMap<>();
+    Long currentMaxId = 0L;
 
     @Override
-    public void create(Long id, Film film) {
+    public void create(Film film) {
+        currentMaxId++;
+        Long id = currentMaxId;
+        film.setId(id);
         films.put(film.getId(), film);
     }
 
@@ -34,9 +38,5 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getAll() {
         return List.copyOf(films.values());
-    }
-
-    public boolean contains(Long key) {
-        return films.containsKey(key);
     }
 }

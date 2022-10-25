@@ -15,7 +15,7 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class Film extends FilmorateModel {
+public class Film {
     private long id;
     @NotNull
     @NotEmpty(message = "Поле имя не может быть пустым")
