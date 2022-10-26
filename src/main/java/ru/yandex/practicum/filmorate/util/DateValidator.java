@@ -16,8 +16,6 @@ public class DateValidator implements ConstraintValidator<IsAfter, LocalDate> {
 
     @Override
     public boolean isValid(LocalDate date, ConstraintValidatorContext constraintValidatorContext) {
-        // костыль, по большому счету, но хочется иметь возможность не указывать дату в конструкторе,
-        // и при этом как-то валидировать это все внутри
         if (date == null) {
             return false;
         }
