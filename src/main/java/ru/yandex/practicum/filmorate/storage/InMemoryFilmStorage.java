@@ -10,7 +10,7 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     public Map<Long, Film> films = new HashMap<>();
-    Long currentMaxId = 0L;
+    private Long currentMaxId = 0L;
 
     @Override
     public void create(Film film) {

@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserStorage userStorage;
 
+    @Autowired
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
@@ -26,7 +27,7 @@ public class UserService {
         return userStorage.create(user);
     }
 
-    public User updateUser(User user) throws ValidationException {
+    public User updateUser(User user) {
         if (userStorage.getUser(user.getId()) == null) {
             throw new NotFoundException(String.format("Пользователь с id %d не найден", user.getId()));
         }
@@ -36,12 +37,12 @@ public class UserService {
         return user;
     }
 
-    public void deleteUser(Long id) throws NotFoundException {
+    public void deleteUser(Long id) {
         checkIfUserExists(id);
         userStorage.delete(id);
     }
 
-    public User getUserById(Long id) throws NotFoundException {
+    public User getUserById(Long id) {
         checkIfUserExists(id);
         return userStorage.getUser(id);
     }
@@ -50,7 +51,7 @@ public class UserService {
         return userStorage.getAllUsers();
     }
 
-    public void addFriend(Long userId, Long friendId) throws NotFoundException {
+    public void addFriend(Long userId, Long friendId) {
         checkIfUserExists(userId);
         checkIfUserExists(friendId);
 
@@ -60,7 +61,7 @@ public class UserService {
         user2.addFriend(user1.getId());
     }
 
-    public void removeFriend(Long userId, Long friendId) throws NotFoundException {
+    public void removeFriend(Long userId, Long friendId) {
         checkIfUserExists(userId);
         checkIfUserExists(friendId);
 
@@ -71,7 +72,7 @@ public class UserService {
         user2.removeFriend(user1.getId());
     }
 
-    public List<User> getUserFriends(Long id) throws NotFoundException {
+    public List<User> getUserFriends(Long id) {
         return userStorage.getUser(id).getFriends().stream().map(this::getUserById).collect(Collectors.toList());
     }
 
@@ -90,7 +91,7 @@ public class UserService {
         return user;
     }
 
-    public void checkIfUserExists(Long userId) throws NotFoundException {
+    public void checkIfUserExists(Long userId) {
         /* Можно было бы сделать параметризованную аннотацию для параметра в контроллере вида
            @checkIfModelExists(model=User) Long userId, но не уверен,
            что делать скрытые запросы к БД (потенциально) и держать в объекте аннотации ссылки

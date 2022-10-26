@@ -14,7 +14,7 @@ import java.util.Set;
 
 
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class Film {
     private long id;
     @NotNull
@@ -29,15 +29,15 @@ public class Film {
     private int duration;
     private Set<Long> likers = new HashSet<>();
 
-    public void addLikeFromUser(Long userId){
+    public void addLikeFromUser(Long userId) {
         likers.add(userId);
     }
 
-    public void removeLikeFromUser(Long userId){
+    public void removeLikeFromUser(Long userId) {
         likers.remove(userId);
     }
 
-    public int getNumberOfLikes(){
+    public int getNumberOfLikes() {
         return likers.size();
     }
 }

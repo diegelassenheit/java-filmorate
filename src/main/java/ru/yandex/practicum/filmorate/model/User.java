@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class User {
     private long id;
     @Email
@@ -29,10 +29,10 @@ public class User {
     private Set<Long> friends = new HashSet<>();
 
     public void addFriend(Long friendId) {
-       friends.add(friendId);
+        friends.add(friendId);
     }
 
     public void removeFriend(Long friendId) {
-       friends.remove(friendId);
+        friends.remove(friendId);
     }
 }

@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -16,6 +16,7 @@ import java.util.List;
 public class FilmController {
     private final FilmService filmService;
 
+    @Autowired
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
@@ -29,7 +30,7 @@ public class FilmController {
     }
 
     @PutMapping("/films")
-    public Film updateFilm(@Valid @RequestBody Film film) throws ValidationException {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         film = filmService.updateFilm(film);
         log.info(String.format("Фильм c id=%d обновлен", film.getId()));
         log.debug(String.format("Значение фильма = %s", film.toString()));
@@ -37,7 +38,7 @@ public class FilmController {
     }
 
     @GetMapping("/films/{id}")
-    public Film getFilm(@PathVariable("id") Long id) throws ValidationException {
+    public Film getFilm(@PathVariable("id") Long id) {
         Film film = filmService.getFilmById(id);
         log.info(String.format("Фильм c id=%d обновлен", film.getId()));
         log.debug(String.format("Значение фильма = %s", film.toString()));
