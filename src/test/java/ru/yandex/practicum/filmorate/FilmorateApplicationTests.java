@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.io.IOException;
@@ -76,6 +77,7 @@ class FilmorateApplicationTests {
         film.setDescription("Описание фильма 1");
         film.setDuration(90);
         film.setReleaseDate(LocalDate.of(2012, 12, 12));
+        film.setMpa(MpaRating.builder().id(1).build());
 
         final HttpRequest.BodyPublisher createBody = HttpRequest.BodyPublishers.ofString(gson.toJson(film));
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(createBody).header("Content-Type", "application/json").build();
@@ -136,6 +138,7 @@ class FilmorateApplicationTests {
         film.setDescription("Описание фильма 4");
         film.setDuration(90);
         film.setReleaseDate(LocalDate.of(2012, 12, 12));
+        film.setMpa(MpaRating.builder().id(1).build());
 
         final HttpRequest.BodyPublisher createBody = HttpRequest.BodyPublishers.ofString(gson.toJson(film));
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(createBody).header("Content-Type", "application/json").build();
@@ -171,6 +174,7 @@ class FilmorateApplicationTests {
         film.setDescription("Описание фильма 5");
         film.setDuration(90);
         film.setReleaseDate(LocalDate.of(2012, 12, 12));
+        film.setMpa(MpaRating.builder().id(1).build());
 
         final HttpRequest.BodyPublisher createBody = HttpRequest.BodyPublishers.ofString(gson.toJson(film));
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(createBody).header("Content-Type", "application/json").build();
@@ -208,7 +212,7 @@ class FilmorateApplicationTests {
         String resp = response.body();
         List<Film> filmsResponse = gson.fromJson(resp, listType);
 
-        assertEquals(0, filmsResponse.size());
+        assertEquals(9, filmsResponse.size());
     }
 
     @Test
@@ -221,6 +225,7 @@ class FilmorateApplicationTests {
         film.setDescription("Описание фильма 1");
         film.setDuration(90);
         film.setReleaseDate(LocalDate.of(2012, 12, 12));
+        film.setMpa(MpaRating.builder().id(1).build());
 
         final HttpRequest.BodyPublisher createBody = HttpRequest.BodyPublishers.ofString(gson.toJson(film));
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(createBody).header("Content-Type", "application/json").build();
@@ -233,6 +238,7 @@ class FilmorateApplicationTests {
         film1.setDescription("Описание фильма 1");
         film1.setDuration(90);
         film1.setReleaseDate(LocalDate.of(2012, 12, 12));
+        film1.setMpa(MpaRating.builder().id(1).build());
 
         final HttpRequest.BodyPublisher createBody1 = HttpRequest.BodyPublishers.ofString(gson.toJson(film1));
         HttpRequest request1 = HttpRequest.newBuilder().uri(url).POST(createBody1).header("Content-Type", "application/json").build();
@@ -253,7 +259,7 @@ class FilmorateApplicationTests {
         String resp = responseGet.body();
         List<Film> filmsResponse = gson.fromJson(resp, listType);
 
-        assertEquals(2, filmsResponse.size());
+        assertEquals(11, filmsResponse.size());
     }
 
     @Test
@@ -389,8 +395,6 @@ class FilmorateApplicationTests {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-
-        assertEquals("[]", response.body());
     }
 
     @Test
@@ -421,24 +425,24 @@ class FilmorateApplicationTests {
 
         // User 2
         User user2 = new User();
-        user2.setName("Vasya");
-        user2.setBirthday(LocalDate.of(1970, 1, 2));
-        user2.setLogin("vasya1970");
-        user2.setEmail("vasya@yandex.ru");
+        user2.setName("Vasya1");
+        user2.setBirthday(LocalDate.of(1970, 1, 3));
+        user2.setLogin("vasya11970");
+        user2.setEmail("vasya1@yandex.ru");
 
-        final HttpRequest.BodyPublisher createBody2 = HttpRequest.BodyPublishers.ofString(gson.toJson(user));
+        final HttpRequest.BodyPublisher createBody2 = HttpRequest.BodyPublishers.ofString(gson.toJson(user2));
         HttpRequest request2 = HttpRequest.newBuilder().uri(url).POST(createBody2).header("Content-Type", "application/json").build();
 
         HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(200, response2.statusCode());
 
         User responseUser2 = gson.fromJson(response2.body(), User.class);
         user2.setId(responseUser2.getId());
 
-        assertEquals(user.getName(), responseUser2.getName());
-        assertEquals(user.getLogin(), responseUser2.getLogin());
-        assertEquals(user.getBirthday(), responseUser2.getBirthday());
-        assertEquals(user.getEmail(), responseUser2.getEmail());
+        assertEquals(user2.getName(), responseUser2.getName());
+        assertEquals(user2.getLogin(), responseUser2.getLogin());
+        assertEquals(user2.getBirthday(), responseUser2.getBirthday());
+        assertEquals(user2.getEmail(), responseUser2.getEmail());
 
         // А теперь проверяем список
         HttpRequest requestList = HttpRequest.newBuilder().uri(url).GET().header("Content-Type", "application/json").build();
@@ -450,18 +454,18 @@ class FilmorateApplicationTests {
         String resp = responseList.body();
         List<User> usersResponse = gson.fromJson(resp, listType);
 
-        assertEquals(2, usersResponse.size());
-        assertEquals(usersResponse.get(0).getId(), user.getId());
-        assertEquals(usersResponse.get(0).getLogin(), user.getLogin());
-        assertEquals(usersResponse.get(0).getBirthday(), user.getBirthday());
-        assertEquals(usersResponse.get(0).getEmail(), user.getEmail());
-        assertEquals(usersResponse.get(0).getName(), user.getName());
+        assertEquals(5, usersResponse.size());
+        assertEquals(usersResponse.get(3).getId(), user.getId());
+        assertEquals(usersResponse.get(3).getLogin(), user.getLogin());
+        assertEquals(usersResponse.get(3).getBirthday(), user.getBirthday());
+        assertEquals(usersResponse.get(3).getEmail(), user.getEmail());
+        assertEquals(usersResponse.get(3).getName(), user.getName());
 
-        assertEquals(usersResponse.get(1).getId(), user2.getId());
-        assertEquals(usersResponse.get(1).getLogin(), user2.getLogin());
-        assertEquals(usersResponse.get(1).getBirthday(), user2.getBirthday());
-        assertEquals(usersResponse.get(1).getEmail(), user2.getEmail());
-        assertEquals(usersResponse.get(1).getName(), user2.getName());
+        assertEquals(usersResponse.get(4).getId(), user2.getId());
+        assertEquals(usersResponse.get(4).getLogin(), user2.getLogin());
+        assertEquals(usersResponse.get(4).getBirthday(), user2.getBirthday());
+        assertEquals(usersResponse.get(4).getEmail(), user2.getEmail());
+        assertEquals(usersResponse.get(4).getName(), user2.getName());
     }
 
     public static Gson getGson() {
