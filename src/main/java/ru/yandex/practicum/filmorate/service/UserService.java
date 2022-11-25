@@ -2,14 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,7 +17,7 @@ public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -52,34 +51,29 @@ public class UserService {
     }
 
     public void addFriend(Long userId, Long friendId) {
-        checkIfUserExists(userId);
-        checkIfUserExists(friendId);
-
         User user1 = getUserById(userId);
         User user2 = getUserById(friendId);
-        user1.addFriend(user2.getId());
-        user2.addFriend(user1.getId());
+
+        userStorage.addFriend(user1.getId(), user2.getId());
     }
 
     public void removeFriend(Long userId, Long friendId) {
-        checkIfUserExists(userId);
-        checkIfUserExists(friendId);
-
-        User user1 = getUserById(userId);
-        User user2 = getUserById(friendId);
-
-        user1.removeFriend(user2.getId());
-        user2.removeFriend(user1.getId());
+        userStorage.removeFriend(userId, friendId);
     }
 
     public List<User> getUserFriends(Long id) {
-        return userStorage.getUser(id).getFriends().stream().map(this::getUserById).collect(Collectors.toList());
+        return userStorage.getAllFriends(id);
     }
 
     public List<User> getCommonFriends(Long id, Long otherId) throws NotFoundException {
-        Set<Long> intersection = new HashSet<>(userStorage.getUser(id).getFriends());
-        intersection.retainAll(userStorage.getUser(otherId).getFriends());
-        return intersection.stream().map(this::getUserById).collect(Collectors.toList());
+        List<User> usersFriends = userStorage.getAllFriends(id);
+        List<User> otherUsersFriends = userStorage.getAllFriends(otherId);
+
+        List<User> result = usersFriends.stream()
+                .distinct()
+                .filter(otherUsersFriends::contains).collect(Collectors.toList());
+
+        return result;
     }
 
     private User replaceEmptyUserName(User user) {
@@ -101,6 +95,4 @@ public class UserService {
             throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
     }
-
-
 }

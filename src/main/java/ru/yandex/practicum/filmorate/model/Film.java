@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import ru.yandex.practicum.filmorate.util.IsAfter;
 
 import javax.validation.constraints.NotEmpty;
@@ -9,12 +8,15 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 
-@Data
+@Builder
 @EqualsAndHashCode(callSuper = false)
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Film {
     private long id;
     @NotNull
@@ -27,18 +29,12 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Поле продолжительности фильма не может быть меньше 0")
     private int duration;
-    private Set<Long> likers = new HashSet<>();
+    @NotNull
+    private MpaRating mpa;
+    private List<Genre> genres;
 
-    public void addLikeFromUser(Long userId) {
-        likers.add(userId);
-    }
-
-    public void removeLikeFromUser(Long userId) {
-        likers.remove(userId);
-    }
-
-    public int getNumberOfLikes() {
-        return likers.size();
+    public MpaRating getMpa() {
+        return mpa;
     }
 }
 
