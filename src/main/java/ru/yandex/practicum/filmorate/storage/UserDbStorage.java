@@ -33,7 +33,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        String sqlQuery = "insert into users (email, login, name, birthdate) values (?,?,?,?)";
+        String sqlQuery = "INSERT INTO users (email, login, name, birthdate) VALUES (?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -103,7 +103,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void removeFriend(long userId, long friendId) {
-        String sqlQuery = "DELETE FROM friendship WHERE user_id_from = ? and user_id_to = ?";
+        String sqlQuery = "DELETE FROM friendship WHERE user_id_from = ? AND user_id_to = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
     }
 

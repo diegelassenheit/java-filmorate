@@ -72,7 +72,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film get(Long id) {
         String sqlQuery = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa_rating, m.name mpa_name" +
-                " FROM films as f JOIN mpa_rating as m on f.mpa_rating=m.id  WHERE f.id = ?";
+                " FROM films AS f JOIN mpa_rating AS m ON f.mpa_rating=m.id  WHERE f.id = ?";
 
         List<Film> films = new ArrayList<>(jdbcTemplate.query(sqlQuery, this::makeFilm, id));
         if (films.size() != 1) {
@@ -93,9 +93,8 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getPopular(Integer count) {
         String sqlQuery = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa_rating, m.name mpa_name" +
-                " FROM films as f JOIN mpa_rating as m on f.mpa_rating=m.id LEFT JOIN (SELECT film_id, COUNT(user_id) " +
-                "likes FROM likes GROUP BY film_id) l on f.id=l.film_id order by l.likes DESC LIMIT ?";
-//        List<Like> likes = getAllLikes();
+                " FROM films AS f JOIN mpa_rating AS m ON f.mpa_rating=m.id LEFT JOIN (SELECT film_id, COUNT(user_id) " +
+                "likes FROM likes GROUP BY film_id) l ON f.id=l.film_id ODERDER BY l.likes DESC LIMIT ?";
         return new ArrayList<>(
                 jdbcTemplate.query(sqlQuery, this::makeFilm, count));
     }
@@ -103,7 +102,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getAll() {
         String sqlQuery = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa_rating, " +
-                "m.name mpa_name FROM films as f JOIN mpa_rating as m on f.mpa_rating=m.id";
+                "m.name mpa_name FROM films AS f JOIN mpa_rating AS m ON f.mpa_rating=m.id";
         return jdbcTemplate.query(sqlQuery, this::makeFilm);
     }
 
@@ -122,7 +121,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addLikeFromUser(long filmId, long userId) {
-        String sqlQuery = "insert into likes (film_id, user_id) values (?,?)";
+        String sqlQuery = "INSERT INTO likes (film_id, user_id) VALUES (?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -166,7 +165,7 @@ public class FilmDbStorage implements FilmStorage {
     public void addGenresToFilm(long filmId, List<Genre> genres) {
         String sqlQuery = "INSERT INTO film_genre (film_id, genre_id) VALUES (?,?)";
         Set<Long> genreIds = genres.stream().map(Genre::getId).collect(Collectors.toSet());
-        int batchSize = 100;
+        int batchSize = genreIds.size();
 
         jdbcTemplate.batchUpdate(sqlQuery,
                 genreIds,
