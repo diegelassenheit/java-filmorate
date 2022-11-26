@@ -94,7 +94,7 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getPopular(Integer count) {
         String sqlQuery = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa_rating, m.name mpa_name" +
                 " FROM films AS f JOIN mpa_rating AS m ON f.mpa_rating=m.id LEFT JOIN (SELECT film_id, COUNT(user_id) " +
-                "likes FROM likes GROUP BY film_id) l ON f.id=l.film_id ODERDER BY l.likes DESC LIMIT ?";
+                "likes FROM likes GROUP BY film_id) l ON f.id=l.film_id ORDER BY l.likes DESC LIMIT ?";
         return new ArrayList<>(
                 jdbcTemplate.query(sqlQuery, this::makeFilm, count));
     }
