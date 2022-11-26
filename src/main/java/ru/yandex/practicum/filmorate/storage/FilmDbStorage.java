@@ -55,8 +55,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void update(Long id, Film film) {
-        /* можно было бы в "модельке" завести список изменившихся полей и потом только их и обновлять,
-         * но наверное, в этом особой необходимости на этом этапе нет */
         String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, mpa_rating = ? WHERE id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
                 film.getDuration(), film.getMpa().getId(), film.getId());
