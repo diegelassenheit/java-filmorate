@@ -93,11 +93,15 @@ public class FilmorateUserDbStorageTests {
 
     @Test
     public void testDeleteUser() {
-        userStorage.delete(3L);
+        User user = User.builder().id(3L).email("denis@example.com").name("denis")
+                .login("denis").birthday(LocalDate.of(1973, 06, 3)).build();
+        User userFromDb = userStorage.create(user);
+
+        userStorage.delete(userFromDb.getId());
         Exception exception = assertThrows(NotFoundException.class, () -> {
-            userStorage.getUser(3L);
+            userStorage.getUser(userFromDb.getId());
         });
-        assertEquals("User with id = 3 not found", exception.getMessage());
+        assertEquals(String.format("User with id = %s not found", userFromDb.getId()), exception.getMessage());
     }
 
 
