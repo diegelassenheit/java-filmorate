@@ -60,7 +60,7 @@ public class UserController {
     public ResponseEntity<?> addToFriends(@PathVariable("id") Long id,
                                           @PathVariable("friendId") Long friendId) {
         userService.addFriend(id, friendId);
-        log.info(String.format("Пользователи %d и %d добавлены в друзья друг другу", id, friendId));
+        log.info(String.format("Пользователь %d добавил %d в друзья", id, friendId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
@@ -68,7 +68,7 @@ public class UserController {
     public ResponseEntity<?> removeFromFiends(@PathVariable("id") Long id,
                                               @PathVariable("friendId") Long friendId) {
         userService.removeFriend(id, friendId);
-        log.info(String.format("Пользователи %d и %d удалены из друзей друг друга", id, friendId));
+        log.info(String.format("Пользователь %d удалил %d из друзей", id, friendId));
         return ResponseEntity.status(HttpStatus.OK).body("");
     }
 

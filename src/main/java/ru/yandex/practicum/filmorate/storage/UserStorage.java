@@ -17,4 +17,14 @@ public interface UserStorage {
 
     public boolean contains(Long key);
 
+    public void addFriend(long userId, long friendId);
+
+    public void removeFriend(long userId, long friendId);
+
+    public List<User> getAllFriends(long userId);
+
+    public List<User> getMutalFriends(long userId);
+
+    public List<User> getCommonFriends(long userId, long friendId);
+
 }

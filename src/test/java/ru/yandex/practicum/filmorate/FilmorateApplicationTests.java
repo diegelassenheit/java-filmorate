@@ -1,20 +1,21 @@
 package ru.yandex.practicum.filmorate;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
-import org.junit.jupiter.api.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
-
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.io.IOException;
@@ -27,8 +28,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@Sql({"/schema.sql", "/test_data.sql"})
 class FilmorateApplicationTests {
     public ConfigurableApplicationContext ctx;
 
@@ -75,6 +79,7 @@ class FilmorateApplicationTests {
         film.setDescription("Описание фильма 1");
         film.setDuration(90);
         film.setReleaseDate(LocalDate.of(2012, 12, 12));
+        film.setMpa(MpaRating.builder().id(1).build());
 
         final HttpRequest.BodyPublisher createBody = HttpRequest.BodyPublishers.ofString(gson.toJson(film));
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(createBody).header("Content-Type", "application/json").build();
@@ -135,6 +140,7 @@ class FilmorateApplicationTests {
         film.setDescription("Описание фильма 4");
         film.setDuration(90);
         film.setReleaseDate(LocalDate.of(2012, 12, 12));
+        film.setMpa(MpaRating.builder().id(1).build());
 
         final HttpRequest.BodyPublisher createBody = HttpRequest.BodyPublishers.ofString(gson.toJson(film));
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(createBody).header("Content-Type", "application/json").build();
@@ -170,6 +176,7 @@ class FilmorateApplicationTests {
         film.setDescription("Описание фильма 5");
         film.setDuration(90);
         film.setReleaseDate(LocalDate.of(2012, 12, 12));
+        film.setMpa(MpaRating.builder().id(1).build());
 
         final HttpRequest.BodyPublisher createBody = HttpRequest.BodyPublishers.ofString(gson.toJson(film));
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(createBody).header("Content-Type", "application/json").build();
@@ -220,6 +227,7 @@ class FilmorateApplicationTests {
         film.setDescription("Описание фильма 1");
         film.setDuration(90);
         film.setReleaseDate(LocalDate.of(2012, 12, 12));
+        film.setMpa(MpaRating.builder().id(1).build());
 
         final HttpRequest.BodyPublisher createBody = HttpRequest.BodyPublishers.ofString(gson.toJson(film));
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(createBody).header("Content-Type", "application/json").build();
@@ -232,6 +240,7 @@ class FilmorateApplicationTests {
         film1.setDescription("Описание фильма 1");
         film1.setDuration(90);
         film1.setReleaseDate(LocalDate.of(2012, 12, 12));
+        film1.setMpa(MpaRating.builder().id(1).build());
 
         final HttpRequest.BodyPublisher createBody1 = HttpRequest.BodyPublishers.ofString(gson.toJson(film1));
         HttpRequest request1 = HttpRequest.newBuilder().uri(url).POST(createBody1).header("Content-Type", "application/json").build();
@@ -388,8 +397,6 @@ class FilmorateApplicationTests {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-
-        assertEquals("[]", response.body());
     }
 
     @Test
@@ -420,24 +427,24 @@ class FilmorateApplicationTests {
 
         // User 2
         User user2 = new User();
-        user2.setName("Vasya");
-        user2.setBirthday(LocalDate.of(1970, 1, 2));
-        user2.setLogin("vasya1970");
-        user2.setEmail("vasya@yandex.ru");
+        user2.setName("Vasya1");
+        user2.setBirthday(LocalDate.of(1970, 1, 3));
+        user2.setLogin("vasya11970");
+        user2.setEmail("vasya1@yandex.ru");
 
-        final HttpRequest.BodyPublisher createBody2 = HttpRequest.BodyPublishers.ofString(gson.toJson(user));
+        final HttpRequest.BodyPublisher createBody2 = HttpRequest.BodyPublishers.ofString(gson.toJson(user2));
         HttpRequest request2 = HttpRequest.newBuilder().uri(url).POST(createBody2).header("Content-Type", "application/json").build();
 
         HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(200, response2.statusCode());
 
         User responseUser2 = gson.fromJson(response2.body(), User.class);
         user2.setId(responseUser2.getId());
 
-        assertEquals(user.getName(), responseUser2.getName());
-        assertEquals(user.getLogin(), responseUser2.getLogin());
-        assertEquals(user.getBirthday(), responseUser2.getBirthday());
-        assertEquals(user.getEmail(), responseUser2.getEmail());
+        assertEquals(user2.getName(), responseUser2.getName());
+        assertEquals(user2.getLogin(), responseUser2.getLogin());
+        assertEquals(user2.getBirthday(), responseUser2.getBirthday());
+        assertEquals(user2.getEmail(), responseUser2.getEmail());
 
         // А теперь проверяем список
         HttpRequest requestList = HttpRequest.newBuilder().uri(url).GET().header("Content-Type", "application/json").build();
