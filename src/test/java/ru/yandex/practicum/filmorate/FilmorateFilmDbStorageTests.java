@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Like;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Sql({"/schema.sql", "/test_data.sql"})
 public class FilmorateFilmDbStorageTests {
     private final FilmDbStorage filmStorage;
 
@@ -101,17 +103,17 @@ public class FilmorateFilmDbStorageTests {
     @Test
     public void testDeleteFilm(){
         List<Film> films = filmStorage.getAll();
-        assertEquals(10, films.size());
+        assertEquals(9, films.size());
         Set<Long> filmIds = films.stream().map(Film::getId).collect(Collectors.toSet());
-        assertTrue(filmIds.contains(10L));
+        assertTrue(filmIds.contains(9L));
 
-        filmStorage.delete(films.get(9).getId());
+        filmStorage.delete(films.get(8).getId());
 
         List<Film> filmsAfterDelete = filmStorage.getAll();
-        assertEquals(9, filmsAfterDelete.size());
+        assertEquals(8, filmsAfterDelete.size());
 
         Set<Long> filmIdsAfterDelete = filmsAfterDelete.stream().map(Film::getId).collect(Collectors.toSet());
-        assertFalse(filmIdsAfterDelete.contains(10L));
+        assertFalse(filmIdsAfterDelete.contains(9L));
     }
 
     @Test

@@ -13,6 +13,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.User;
@@ -31,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@Sql({"/schema.sql", "/test_data.sql"})
 class FilmorateApplicationTests {
     public ConfigurableApplicationContext ctx;
 
@@ -212,7 +214,7 @@ class FilmorateApplicationTests {
         String resp = response.body();
         List<Film> filmsResponse = gson.fromJson(resp, listType);
 
-        assertEquals(9, filmsResponse.size());
+        assertEquals(0, filmsResponse.size());
     }
 
     @Test
@@ -259,7 +261,7 @@ class FilmorateApplicationTests {
         String resp = responseGet.body();
         List<Film> filmsResponse = gson.fromJson(resp, listType);
 
-        assertEquals(11, filmsResponse.size());
+        assertEquals(2, filmsResponse.size());
     }
 
     @Test
@@ -454,18 +456,18 @@ class FilmorateApplicationTests {
         String resp = responseList.body();
         List<User> usersResponse = gson.fromJson(resp, listType);
 
-        assertEquals(5, usersResponse.size());
-        assertEquals(usersResponse.get(3).getId(), user.getId());
-        assertEquals(usersResponse.get(3).getLogin(), user.getLogin());
-        assertEquals(usersResponse.get(3).getBirthday(), user.getBirthday());
-        assertEquals(usersResponse.get(3).getEmail(), user.getEmail());
-        assertEquals(usersResponse.get(3).getName(), user.getName());
+        assertEquals(2, usersResponse.size());
+        assertEquals(usersResponse.get(0).getId(), user.getId());
+        assertEquals(usersResponse.get(0).getLogin(), user.getLogin());
+        assertEquals(usersResponse.get(0).getBirthday(), user.getBirthday());
+        assertEquals(usersResponse.get(0).getEmail(), user.getEmail());
+        assertEquals(usersResponse.get(0).getName(), user.getName());
 
-        assertEquals(usersResponse.get(4).getId(), user2.getId());
-        assertEquals(usersResponse.get(4).getLogin(), user2.getLogin());
-        assertEquals(usersResponse.get(4).getBirthday(), user2.getBirthday());
-        assertEquals(usersResponse.get(4).getEmail(), user2.getEmail());
-        assertEquals(usersResponse.get(4).getName(), user2.getName());
+        assertEquals(usersResponse.get(1).getId(), user2.getId());
+        assertEquals(usersResponse.get(1).getLogin(), user2.getLogin());
+        assertEquals(usersResponse.get(1).getBirthday(), user2.getBirthday());
+        assertEquals(usersResponse.get(1).getEmail(), user2.getEmail());
+        assertEquals(usersResponse.get(1).getName(), user2.getName());
     }
 
     public static Gson getGson() {

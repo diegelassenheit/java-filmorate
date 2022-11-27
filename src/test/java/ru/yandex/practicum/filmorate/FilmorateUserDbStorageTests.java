@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
@@ -21,9 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Sql({"/schema.sql", "/test_data.sql"})
 public class FilmorateUserDbStorageTests {
     private final UserDbStorage userStorage;
     private final FilmDbStorage filmStorage;
+
 
     @Test
     public void testCreateUser() {
@@ -70,7 +75,7 @@ public class FilmorateUserDbStorageTests {
         User user3 = userStorage.getUser(3L);
         assertEquals("katya", user3.getName());
         assertEquals("katya", user3.getLogin());
-        assertEquals("katya-new-email@example.com", user3.getEmail());
+        assertEquals("katya@example.com", user3.getEmail());
     }
 
     @Test
